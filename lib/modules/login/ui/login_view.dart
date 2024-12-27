@@ -41,37 +41,12 @@ class _LoginViewState extends State<LoginView> {
         showBottomSheet = true;
       });
     });
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollController1.animateTo(
-        _scrollController1.position.maxScrollExtent,
-        duration: const Duration(seconds: 4000),
-        curve: Curves.linear,
-      );
-      _scrollController2.animateTo(
-        _scrollController2.position.maxScrollExtent,
-        duration: const Duration(seconds: 4000),
-        curve: Curves.linear,
-      );
-      _scrollController3.animateTo(
-        _scrollController3.position.maxScrollExtent,
-        duration: const Duration(seconds: 4000),
-        curve: Curves.linear,
-      );
-    });
   }
 
   @override
   void dispose() {
-    _scrollController1.dispose();
-    _scrollController2.dispose();
-    _scrollController3.dispose();
     super.dispose();
   }
-
-  final ScrollController _scrollController1 = ScrollController();
-  final ScrollController _scrollController2 = ScrollController();
-  final ScrollController _scrollController3 = ScrollController();
 
   @override
   Widget build(BuildContext widgetContext) {
@@ -82,154 +57,34 @@ class _LoginViewState extends State<LoginView> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Expanded(
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: -30,
-                    left: MediaQuery.of(context).size.width * 0.092,
-                    child: RotationTransition(
-                      turns: const AlwaysStoppedAnimation(-27 / 360),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(7),
-                          color: Colors.red,
-                        ),
-                        width: MediaQuery.of(context).size.width * 0.30,
-                        height: MediaQuery.of(context).size.height * 0.7,
-                        child: ListView.builder(
-                          controller: _scrollController1,
-                          itemCount: 1000,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              margin: const EdgeInsets.only(
-                                top: 5,
-                                left: 5,
-                                right: 5,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(7),
-                                color: Color.fromARGB(
-                                    255,
-                                    Random().nextInt(255),
-                                    Random().nextInt(255),
-                                    Random().nextInt(255)),
-                              ),
-                              width: MediaQuery.of(context).size.width * 0.28,
-                              height: 90,
-                            );
-                          },
-                        ),
+              child: Container(
+                alignment: Alignment.center,
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    Text(
+                      "Nyatet.",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.quicksand(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30,
+                        color: HexColor("#0c756e"),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    top: -60,
-                    left: MediaQuery.of(context).size.width * 0.45,
-                    child: RotationTransition(
-                      turns: const AlwaysStoppedAnimation(-27 / 360),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(7),
-                          color: Colors.red,
-                        ),
-                        width: MediaQuery.of(context).size.width * 0.30,
-                        height: MediaQuery.of(context).size.height * 0.7,
-                        child: ListView.builder(
-                          controller: _scrollController2,
-                          itemCount: 1000,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              margin: const EdgeInsets.only(
-                                top: 5,
-                                left: 5,
-                                right: 5,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(7),
-                                color: Color.fromARGB(
-                                    255,
-                                    Random().nextInt(255),
-                                    Random().nextInt(255),
-                                    Random().nextInt(255)),
-                              ),
-                              width: MediaQuery.of(context).size.width * 0.28,
-                              height: 90,
-                            );
-                          },
-                        ),
+                    const SizedBox(height: 15),
+                    Text(
+                      "Selamat datang di Nyatet. \nSilahkan Login untuk melanjutkan",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.quicksand(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: HexColor("#0c756e").withOpacity(0.8),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    top: -100,
-                    left: MediaQuery.of(context).size.width * 0.795,
-                    child: RotationTransition(
-                      turns: const AlwaysStoppedAnimation(-27 / 360),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(7),
-                          color: Colors.red,
-                        ),
-                        width: MediaQuery.of(context).size.width * 0.30,
-                        height: MediaQuery.of(context).size.height * 0.7,
-                        child: ListView.builder(
-                          controller: _scrollController3,
-                          itemCount: 1000,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              margin: const EdgeInsets.only(
-                                top: 5,
-                                left: 5,
-                                right: 5,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(7),
-                                color: Color.fromARGB(
-                                    255,
-                                    Random().nextInt(255),
-                                    Random().nextInt(255),
-                                    Random().nextInt(255)),
-                              ),
-                              width: MediaQuery.of(context).size.width * 0.28,
-                              height: 90,
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-            // Expanded(
-            //   child: Container(
-            //     alignment: Alignment.center,
-            //     child: ListView(
-            //       shrinkWrap: true,
-            //       children: [
-            //         Text(
-            //           "Nyatet.",
-            //           textAlign: TextAlign.center,
-            //           style: GoogleFonts.quicksand(
-            //             fontWeight: FontWeight.bold,
-            //             fontSize: 30,
-            //             color: HexColor("#0c756e"),
-            //           ),
-            //         ),
-            //         const SizedBox(height: 15),
-            //         Text(
-            //           "Selamat datang di Nyatet. \nSilahkan Login untuk melanjutkan",
-            //           textAlign: TextAlign.center,
-            //           style: GoogleFonts.quicksand(
-            //             fontWeight: FontWeight.bold,
-            //             fontSize: 14,
-            //             color: HexColor("#0c756e").withOpacity(0.8),
-            //           ),
-            //         ),
-            //       ],
-            //     ),
-            //   ),
-            // ),
             AnimatedContainer(
               duration: const Duration(milliseconds: 600),
               padding: const EdgeInsets.symmetric(horizontal: 20),

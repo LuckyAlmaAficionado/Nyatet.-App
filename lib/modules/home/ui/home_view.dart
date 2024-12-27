@@ -1,8 +1,10 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:frontend_nyatet_app_flutter/modules/login/ui/login_view.dart';
 import 'package:frontend_nyatet_app_flutter/modules/settings/ui/settings_view.dart';
+import 'package:frontend_nyatet_app_flutter/service/hive.service.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -10,6 +12,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:frontend_nyatet_app_flutter/modules/note/ui/note_view.dart';
 import 'package:frontend_nyatet_app_flutter/modules/todo/ui/todo_view.dart';
 import 'package:frontend_nyatet_app_flutter/utils/textformfield_custom.dart';
+import 'package:hive/hive.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -24,6 +27,8 @@ class _HomeViewState extends State<HomeView> {
   TextEditingController titleController = TextEditingController();
   int indexWidget = 0;
 
+  late HiveService hiveService;
+
   // Gunakan ValueNotifier untuk membuat daftar todo yang dapat diberitahukan jika berubah
   ValueNotifier<List<String>> listTodoInput = ValueNotifier<List<String>>([]);
   ValueNotifier<List<String>> listNoteInput = ValueNotifier<List<String>>([]);
@@ -34,6 +39,10 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
+    hiveService = HiveService();
+    hiveService.initializeHive().then((_) {
+      setState(() {});
+    });
     widgetList = [
       TodoView(listTodo: listTodoInput),
       NoteView(listNote: listNoteInput),
@@ -52,79 +61,81 @@ class _HomeViewState extends State<HomeView> {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: HexColor("#0e766d"),
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (_) => AlertDialog(
-              title: Text(
-                "Add Task",
-                style: GoogleFonts.quicksand(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              content: Form(
-                key: _titleValidator,
-                child: TextFormFieldCustom(
-                  controller: titleController,
-                  hintText: 'Input title here...',
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter some text';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              actions: [
-                TextButton(
-                  child: Text(
-                    "Cancel",
-                    style: GoogleFonts.outfit(
-                      color: Colors.red,
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    titleController.clear();
-                  },
-                ),
-                TextButton(
-                  child: Text(
-                    "Submit",
-                    style: GoogleFonts.outfit(
-                      color: HexColor("#0e766d"),
-                    ),
-                  ),
-                  onPressed: () {
-                    if (_titleValidator.currentState!.validate()) {
-                      Navigator.pop(context, true);
+          var token = hiveService.get('token');
+          print(token);
+          // showDialog(
+          //   context: context,
+          //   builder: (_) => AlertDialog(
+          //     title: Text(
+          //       "Add Task",
+          //       style: GoogleFonts.quicksand(
+          //         fontSize: 16,
+          //         fontWeight: FontWeight.w600,
+          //       ),
+          //     ),
+          //     content: Form(
+          //       key: _titleValidator,
+          //       child: TextFormFieldCustom(
+          //         controller: titleController,
+          //         hintText: 'Input title here...',
+          //         validator: (value) {
+          //           if (value == null || value.isEmpty) {
+          //             return 'Please enter some text';
+          //           }
+          //           return null;
+          //         },
+          //       ),
+          //     ),
+          //     actions: [
+          //       TextButton(
+          //         child: Text(
+          //           "Cancel",
+          //           style: GoogleFonts.outfit(
+          //             color: Colors.red,
+          //           ),
+          //         ),
+          //         onPressed: () {
+          //           Navigator.pop(context);
+          //           titleController.clear();
+          //         },
+          //       ),
+          //       TextButton(
+          //         child: Text(
+          //           "Submit",
+          //           style: GoogleFonts.outfit(
+          //             color: HexColor("#0e766d"),
+          //           ),
+          //         ),
+          //         onPressed: () {
+          //           if (_titleValidator.currentState!.validate()) {
+          //             Navigator.pop(context, true);
 
-                      if (indexWidget == 0) {
-                        setState(() {
-                          listTodoInput.value = [
-                            ...listTodoInput.value,
-                            titleController.text,
-                          ];
-                        });
-                      }
+          //             if (indexWidget == 0) {
+          //               setState(() {
+          //                 listTodoInput.value = [
+          //                   ...listTodoInput.value,
+          //                   titleController.text,
+          //                 ];
+          //               });
+          //             }
 
-                      if (indexWidget == 1) {
-                        log(indexWidget.toString());
-                        setState(() {
-                          listNoteInput.value = [
-                            ...listNoteInput.value,
-                            titleController.text,
-                          ];
-                        });
-                      }
+          //             if (indexWidget == 1) {
+          //               log(indexWidget.toString());
+          //               setState(() {
+          //                 listNoteInput.value = [
+          //                   ...listNoteInput.value,
+          //                   titleController.text,
+          //                 ];
+          //               });
+          //             }
 
-                      titleController.clear();
-                    }
-                  },
-                ),
-              ],
-            ),
-          );
+          //             titleController.clear();
+          //           }
+          //         },
+          //       ),
+          //     ],
+          //   ),
+          // );
         },
         label: Text(
           "Add ${widgetName[indexWidget]}",

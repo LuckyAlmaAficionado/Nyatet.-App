@@ -15,12 +15,15 @@ dependencies:
   flutter_bloc: ^8.1.6
   google_fonts: ^6.2.1
   hexcolor: ^3.0.1
-  intl: ^0.20.0
+  intl: 0.18.1
   bloc: ^8.1.4
   dartz: ^0.10.1
   http: ^1.2.2
   hive: any
   hive_flutter: any
+  flutter_localizations:
+    sdk: flutter
+  cached_network_image: ^3.4.0
 
 
 dev_dependencies:

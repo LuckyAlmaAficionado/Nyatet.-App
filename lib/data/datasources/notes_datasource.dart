@@ -7,20 +7,13 @@ class NotesDatasource {
     required String token,
   }) async {
     try {
-      var headers = {
-        'Authorization':
-            'Bearer 32|cHYNr85IdKZeOKTkmDRFf7nQ7fiGRQerlQELh5b382f9c8ae'
-      };
-
+      var headers = {'Authorization': 'Bearer $token'};
       var request = http.Request(
         'GET',
-        Uri.parse(
-          'https://nyatet.orzverse.com/api/note?page=1',
-        ),
+        Uri.parse('https://nyatet.orzverse.com/api/note?page=1'),
       );
 
       request.headers.addAll(headers);
-
       http.StreamedResponse response = await request.send();
 
       if (response.statusCode == 200) {

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend_nyatet_app_flutter/service/hive.service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 
@@ -27,25 +28,52 @@ class _LoginViewState extends State<LoginView> {
     text: "password",
   );
 
+  late HiveService hiveService;
+
   final _formEmailValidator = GlobalKey<FormState>();
   final _formPasswordValidator = GlobalKey<FormState>();
 
   bool showBottomSheet = false;
   bool isRememberMe = false;
+  bool isUserExist = false;
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 1), () {
-      setState(() {
-        showBottomSheet = true;
-      });
+
+    // pengecekah apakah user sudah login atau belum
+    // jika sudah login maka akan langsung diarahkan ke halaman home
+    hiveService = HiveService();
+    hiveService.initializeHive().then((value) {
+      isUserExists();
+
+      if (!isUserExist) {
+        Future.delayed(const Duration(seconds: 1), () {
+          setState(() {
+            showBottomSheet = true;
+          });
+        });
+      }
     });
   }
 
   @override
   void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
     super.dispose();
+  }
+
+  isUserExists() {
+    String? token = hiveService.get('token');
+    if (token != null) {
+      isUserExist = true;
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        HomeView.routeName,
+        (route) => false,
+      );
+    }
   }
 
   @override

@@ -43,11 +43,8 @@ class AuthenticationDatasource {
     }
   }
 
-  Future<void> logout() async {
-    var headers = {
-      'Authorization':
-          'Bearer 3|FCmIpZc758VSK4i22l33jNOhXL1v2bUGovI28I6Ke1adf904'
-    };
+  Future<void> logout({required String token}) async {
+    var headers = {'Authorization': 'Bearer $token'};
 
     var request = http.Request(
       'DELETE',

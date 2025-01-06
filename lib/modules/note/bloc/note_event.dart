@@ -4,5 +4,5 @@ part of 'note_bloc.dart';
 class NoteEvent with _$NoteEvent {
   const factory NoteEvent.started() = _Started;
 
-  const factory NoteEvent.getAllTodo() = _GetAllTodo;
+  const factory NoteEvent.getAllNotes() = _GetAllNotes;
 }

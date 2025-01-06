@@ -1,18 +1,20 @@
+import 'dart:convert';
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:frontend_nyatet_app_flutter/data/datasources/authentication_datasource.dart';
+import 'package:frontend_nyatet_app_flutter/data/model/login_response_model.dart';
 import 'package:frontend_nyatet_app_flutter/modules/login/ui/login_view.dart';
 import 'package:frontend_nyatet_app_flutter/modules/settings/ui/settings_view.dart';
+import 'package:frontend_nyatet_app_flutter/modules/todo/ui/todo_history_view.dart';
 import 'package:frontend_nyatet_app_flutter/service/hive.service.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-import 'package:frontend_nyatet_app_flutter/modules/note/ui/note_view.dart';
-import 'package:frontend_nyatet_app_flutter/modules/todo/ui/todo_view.dart';
-import 'package:frontend_nyatet_app_flutter/utils/textformfield_custom.dart';
-import 'package:hive/hive.dart';
+import '../../note/ui/note_view.dart';
+import '../../todo/ui/todo_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -23,15 +25,12 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  final _titleValidator = GlobalKey<FormState>();
   TextEditingController titleController = TextEditingController();
   int indexWidget = 0;
 
-  late HiveService hiveService;
-
-  // Gunakan ValueNotifier untuk membuat daftar todo yang dapat diberitahukan jika berubah
-  ValueNotifier<List<String>> listTodoInput = ValueNotifier<List<String>>([]);
-  ValueNotifier<List<String>> listNoteInput = ValueNotifier<List<String>>([]);
+  HiveService hiveService = HiveService();
+  dynamic biodata;
+  bool isComplete = false;
 
   late List<Widget> widgetList;
   List<String> widgetName = ["Todo List", "Note"];
@@ -39,104 +38,49 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
-    hiveService = HiveService();
-    hiveService.initializeHive().then((_) {
+
+    hiveService.initializeHive().then((value) {
+      biodata = json.decode(hiveService.get('biodata'));
+      isComplete = true;
       setState(() {});
     });
-    widgetList = [
-      TodoView(listTodo: listTodoInput),
-      NoteView(listNote: listNoteInput),
+
+    widgetList = const [
+      TodoView(),
+      NoteView(),
     ];
+  }
+
+  List<Widget>? _selectedAction({required String widgetName}) {
+    String lowerWN = widgetName.toLowerCase();
+
+    if (lowerWN == 'todo list') {
+      return [
+        IconButton(
+          onPressed: () {
+            Navigator.pushNamed(context, TodoHistoryView.routeName);
+          },
+          icon: Icon(Icons.history_outlined, color: HexColor("#0c756e")),
+        ),
+      ];
+    }
+
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: DrawerHome(),
+      drawer: isComplete ? DrawerHome(hiveService: hiveService) : null,
       appBar: AppBar(
         iconTheme: IconThemeData(color: HexColor("#0e766d")),
         title: Text(widgetName[indexWidget]),
+        actions: _selectedAction(widgetName: widgetName[indexWidget]),
       ),
       body: widgetList[indexWidget],
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: HexColor("#0e766d"),
-        onPressed: () {
-          var token = hiveService.get('token');
-          print(token);
-          // showDialog(
-          //   context: context,
-          //   builder: (_) => AlertDialog(
-          //     title: Text(
-          //       "Add Task",
-          //       style: GoogleFonts.quicksand(
-          //         fontSize: 16,
-          //         fontWeight: FontWeight.w600,
-          //       ),
-          //     ),
-          //     content: Form(
-          //       key: _titleValidator,
-          //       child: TextFormFieldCustom(
-          //         controller: titleController,
-          //         hintText: 'Input title here...',
-          //         validator: (value) {
-          //           if (value == null || value.isEmpty) {
-          //             return 'Please enter some text';
-          //           }
-          //           return null;
-          //         },
-          //       ),
-          //     ),
-          //     actions: [
-          //       TextButton(
-          //         child: Text(
-          //           "Cancel",
-          //           style: GoogleFonts.outfit(
-          //             color: Colors.red,
-          //           ),
-          //         ),
-          //         onPressed: () {
-          //           Navigator.pop(context);
-          //           titleController.clear();
-          //         },
-          //       ),
-          //       TextButton(
-          //         child: Text(
-          //           "Submit",
-          //           style: GoogleFonts.outfit(
-          //             color: HexColor("#0e766d"),
-          //           ),
-          //         ),
-          //         onPressed: () {
-          //           if (_titleValidator.currentState!.validate()) {
-          //             Navigator.pop(context, true);
-
-          //             if (indexWidget == 0) {
-          //               setState(() {
-          //                 listTodoInput.value = [
-          //                   ...listTodoInput.value,
-          //                   titleController.text,
-          //                 ];
-          //               });
-          //             }
-
-          //             if (indexWidget == 1) {
-          //               log(indexWidget.toString());
-          //               setState(() {
-          //                 listNoteInput.value = [
-          //                   ...listNoteInput.value,
-          //                   titleController.text,
-          //                 ];
-          //               });
-          //             }
-
-          //             titleController.clear();
-          //           }
-          //         },
-          //       ),
-          //     ],
-          //   ),
-          // );
-        },
+        onPressed: () {},
         label: Text(
           "Add ${widgetName[indexWidget]}",
           style: GoogleFonts.quicksand(
@@ -150,7 +94,7 @@ class _HomeViewState extends State<HomeView> {
   }
 
   // ignore: non_constant_identifier_names
-  Drawer DrawerHome() {
+  Drawer DrawerHome({required HiveService hiveService}) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -163,12 +107,15 @@ class _HomeViewState extends State<HomeView> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const CircleAvatar(
+                // Image.network(avatar),
+                CircleAvatar(
                   minRadius: 40,
+                  maxRadius: 40,
+                  backgroundImage: NetworkImage(biodata['avatar'], scale: 1.0),
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Lucky Alma Aficionado Rigel',
+                  biodata['name'] ?? 'Nobody',
                   style: GoogleFonts.quicksand(
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
@@ -276,7 +223,17 @@ class _HomeViewState extends State<HomeView> {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          onPressed: () {
+                          onPressed: () async {
+                            // call logout for delete from database
+                            await AuthenticationDatasource().logout(
+                              token: hiveService.get('token'),
+                            );
+
+                            // delete token from hive
+                            hiveService.delete('token');
+                            hiveService.delete('token_type');
+
+                            // navigate to login
                             Navigator.pushNamedAndRemoveUntil(
                               context,
                               LoginView.routeName,

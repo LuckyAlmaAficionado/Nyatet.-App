@@ -25,13 +25,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         password: event.password,
       );
 
-      response.fold((l) => log(l), (r) => log(r.toJson()));
-
       return response.fold(
         (l) => emit(_Error(message: l)),
         (r) {
           hiveService.set('token_type', r.tokenType);
           hiveService.set('token', r.token);
+          hiveService.set('biodata', r.data!.toJson());
           emit(_Success(data: r));
         },
       );

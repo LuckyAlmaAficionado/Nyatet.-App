@@ -7,5 +7,5 @@ class NoteState with _$NoteState {
   const factory NoteState.loaded(List<Note> notes) = _Loaded;
   const factory NoteState.loading() = _Loading;
   const factory NoteState.success() = _Success;
-  const factory NoteState.error() = _Error;
+  const factory NoteState.error(String error) = _Error;
 }

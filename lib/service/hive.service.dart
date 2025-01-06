@@ -2,7 +2,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 class HiveService {
   late Box _box;
-  Box get box => _box;
 
   // Inisialisasi Hive dan buka box
   Future<void> initializeHive() async {
